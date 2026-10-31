@@ -2,7 +2,7 @@
 
 Behavioral quiescence and sleep-like recovery in sunflower stars (*Pycnopodia helianthoides*).
 
-This repository holds the software behind a laboratory study of sleep-like quiescence in sunflower stars: a live logger for the arousal ("poke") trials, a tool for scoring behavioral states from multi-day video recordings of stars in fixed tanks, and a closed-loop system in which a camera-based segmentation model drives peristaltic pumps through an Arduino.
+This repository holds the software behind a laboratory study of sleep-like quiescence in sunflower stars: the multi-camera recorder used for the multi-day trials, a live logger for the arousal ("poke") trials, a tool for scoring behavioral states from the recordings, and a closed-loop system in which a camera-based segmentation model drives peristaltic pumps through an Arduino.
 
 ## What's here
 
@@ -10,6 +10,7 @@ This repository holds the software behind a laboratory study of sleep-like quies
 |---|---|
 | [`poke-logger/`](poke-logger/) | Browser-based logger for live poke trials. One keypress per event (entry, first poke, first movement, movement away, exit), the star's state before poking (quiescent / alert / moving), a poke timer, per-camera rest periods, an audit trail of every edit, and a live report of response times. Python standard library only. |
 | [`annotation-interface/`](annotation-interface/) | Web app for scoring the three behavioral states (quiescent, still alert, moving), plus poking and feeding, from timelapses of the multi-day recordings. It produces time-stamped ethograms for each tank and compares tanks and trials on a shared time axis. Python standard library + ffmpeg. |
+| [`basler-recorder/`](basler-recorder/) | The 24/7 three-camera Basler recorder used for the multi-day trials. It writes 10-minute H.264 segments with live star segmentation, self-describing file names, JSON sidecars (timing, camera, aquarium geometry, model provenance), throttled atomic backup to a second drive, and resumable model back-casting. |
 | [`pump-control/`](pump-control/) | Camera → segmentation → Arduino → peristaltic pumps. Arduino firmware, the pump service that owns the serial port, and the multi-camera recorder that runs the segmentation model and decides when each tank's pump runs. |
 | [`sample-data/`](sample-data/) | A small anonymized excerpt of the poke-trial log, with column documentation. |
 
