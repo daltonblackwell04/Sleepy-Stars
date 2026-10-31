@@ -1,0 +1,9 @@
+{
+  "note": "Where 'python3 poke_logger.py --grab-references' gets each camera's reference still. Each feed is '<monitor host>/<camera>' on the Live Experiments monitor. Fill in the feed for any camera whose name on the monitor isn't simply its letter.",
+  "monitor": "http://127.0.0.1:8791",
+  "feeds": {
+    "starbase": {"A": "starbase/A", "B": "starbase/B", "C": "starbase/C"},
+    "starbot": {"A": "starbot/A", "B": "starbot/B", "C": "starbot/C", "D": "starbot/D"},
+    "starsense": {"A": "", "B": "", "C": ""}
+  }
+}
