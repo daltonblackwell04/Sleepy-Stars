@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "artifact": {
+    "file": "best.pt",
+    "sha256": "181cf9e1155cb065cb28000d91734b8e654b3bc4acf8fa4a5a0f33f928686277",
+    "source_archive": "target_oversample.zip",
+    "source_archive_member": "target_oversample/weights/best.pt",
+    "source_archive_sha256": "172079257efe6b288f892350ce79a0b449a90dd23dec522fef07533cce7fc2ab"
+  },
+  "model": {
+    "task": "segment",
+    "architecture": "yolo26m-seg.pt",
+    "imgsz": 1024,
+    "classes": {
+      "0": "sunflower_star",
+      "1": "other_sea_star",
+      "2": "live_prey",
+      "3": "dead_prey"
+    }
+  },
+  "training": {
+    "run_name": "target_oversample",
+    "epochs_completed": 150,
+    "batch": 12,
+    "device": "0",
+    "workers": 6,
+    "pretrained": true,
+    "optimizer": "auto",
+    "seed": 0,
+    "deterministic": true,
+    "amp": true,
+    "cos_lr": true,
+    "close_mosaic": 10,
+    "overlap_mask": true,
+    "mask_ratio": 4,
+    "final_metrics": {
+      "box_precision": 0.97378,
+      "box_recall": 0.9785,
+      "box_map50": 0.98984,
+      "box_map50_95": 0.86186,
+      "mask_precision": 0.96509,
+      "mask_recall": 0.96996,
+      "mask_map50": 0.98075,
+      "mask_map50_95": 0.78358
+    }
+  }
+}

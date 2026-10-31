@@ -1,0 +1,39 @@
+[project]
+name = "startracked-loop-recorder"
+version = "1.0.0"
+description = "Four-camera UVC loop recorder with staged H.264 finalization"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "numpy==2.2.6",
+  "opencv-python-headless==4.12.0.88",
+  "pyserial>=3.5",
+]
+
+[project.optional-dependencies]
+starseg = [
+  "torch==2.13.0; sys_platform == 'linux'",
+  "torchvision==0.28.0; sys_platform == 'linux'",
+  "ultralytics==8.4.128; sys_platform == 'linux'",
+]
+test = [
+  "pytest==8.4.1",
+]
+
+[project.scripts]
+startracked-loop-recorder = "startracked_loop_recorder.app:main"
+startracked-backcast = "startracked_loop_recorder.backcast:main"
+startracked-sync-sidecars = "startracked_loop_recorder.sync_sidecars:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/startracked_loop_recorder"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.uv]
+environments = ["sys_platform == 'linux'"]
