@@ -1,0 +1,22 @@
+[Unit]
+Description=Basler Annotation Interface (read-only recorder companion)
+After=graphical-session.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Sleepy-Stars/annotation-interface
+# Where the recorder writes finalized clips (one folder per camera).
+Environment="BASLER_RECORD_ROOT=%h/Videos/Basler Loop Recordings"
+# Prepare timelapse caches on demand so recording and analysis keep priority.
+Environment=BASLER_ANNOTATION_CACHE_MAINTENANCE=0
+Environment=BASLER_ANNOTATION_AUTO_PREWARM=0
+Environment=BASLER_ANNOTATION_CURRENT_DAY_PREWARM=0
+# CPU H.264; use 'auto' to allow a hardware encoder when one works.
+Environment=BASLER_ANNOTATION_ENCODER=libx264
+Environment=BASLER_ANNOTATION_ENCODER_THREADS=2
+ExecStart=/usr/bin/python3 %h/Sleepy-Stars/annotation-interface/annotation_interface.py
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

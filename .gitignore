@@ -14,3 +14,4 @@ dist/
 poke-logger/reference_images/
 *.jsonl
 poke_log.csv
+annotation-interface/feeding_centric_frames/
