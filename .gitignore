@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+*.egg-info/
+build/
+dist/
+
+# model weights are distributed separately
+*.pt
+
+# runtime state and lab data
+.loop-injector/
+poke-logger/reference_images/
+*.jsonl
+poke_log.csv
