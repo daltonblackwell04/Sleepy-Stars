@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Loop Injector</title>
+    <link rel="icon" href="/public/loop-injector-icon.png" type="image/png">
+    <link rel="stylesheet" href="/public/styles.css">
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <p class="eyebrow">Aquaria chemosensory delivery</p>
+          <h1>Loop Injector</h1>
+        </div>
+        <div id="connection" class="status-pill offline">Connecting…</div>
+      </header>
+
+      <nav class="tabs" aria-label="Loop Injector views">
+        <button class="tab active" type="button" data-tab="controls" aria-selected="true">Controls</button>
+        <button class="tab" type="button" data-tab="visualization" aria-selected="false">Schedule view</button>
+        <button class="tab" type="button" data-tab="log" aria-selected="false">Pump log</button>
+      </nav>
+
+      <div id="controls-view" class="tab-view">
+      <section class="safety-bar" aria-label="Safety status">
+        <div>
+          <span class="label">Controller</span>
+          <strong id="controller-state">OFFLINE</strong>
+        </div>
+        <div>
+          <span class="label">Mode</span>
+          <strong id="mode">IDLE</strong>
+        </div>
+        <div>
+          <span class="label">Arbitration</span>
+          <strong id="arbitration-source">IDLE</strong>
+        </div>
+        <div>
+          <span class="label">Recorder</span>
+          <strong id="recorder-state">DISCONNECTED</strong>
+        </div>
+        <div>
+          <span class="label">Emergency latch</span>
+          <strong id="emergency-state">CLEAR</strong>
+        </div>
+        <div>
+          <span class="label">Arduino event</span>
+          <strong id="last-event">—</strong>
+        </div>
+        <div>
+          <span class="label">Automations</span>
+          <strong id="automation-state">LOADING</strong>
+        </div>
+        <button id="emergency-stop" class="danger">ALL PUMPS OFF</button>
+      </section>
+
+      <div id="error" class="error" role="alert" hidden></div>
+
+      <section>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Manual control</p>
+            <h2>Pumps</h2>
+          </div>
+          <p>Each pump maps to one camera and aquarium.</p>
+        </div>
+        <div id="pump-grid" class="pump-grid">
+          <button class="pump" data-pump="1" aria-pressed="false">
+            <span class="pump-number">04</span>
+            <span class="pump-name">Pump 4</span>
+            <span class="pump-state">OFF</span>
+          </button>
+          <button class="pump" data-pump="2" aria-pressed="false">
+            <span class="pump-number">02</span>
+            <span class="pump-name">Pump 2</span>
+            <span class="pump-state">OFF</span>
+          </button>
+          <button class="pump" data-pump="3" aria-pressed="false">
+            <span class="pump-number">03</span>
+            <span class="pump-name">Pump 3</span>
+            <span class="pump-state">OFF</span>
+          </button>
+          <button class="pump" data-pump="4" aria-pressed="false">
+            <span class="pump-number">01</span>
+            <span class="pump-name">Pump 1</span>
+            <span class="pump-state">OFF</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="automation-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Unattended wall-clock control</p>
+            <h2>Time-based automations</h2>
+          </div>
+          <div class="automation-actions">
+            <span id="local-clock" class="local-clock">Local time —</span>
+            <button id="toggle-automations" type="button" class="secondary">Pause automations</button>
+          </div>
+        </div>
+
+        <div class="automation-layout">
+          <form id="automation-form" class="automation-form">
+            <input id="automation-id" type="hidden">
+            <label class="wide">
+              Automation name
+              <input id="automation-name" maxlength="80" value="Day dosing" required>
+            </label>
+
+            <fieldset class="wide">
+              <legend>Pumps running together</legend>
+              <div class="choice-row">
+                <label class="choice"><input type="checkbox" name="automation-pump" value="1" checked> Pump 4</label>
+                <label class="choice"><input type="checkbox" name="automation-pump" value="2" checked> Pump 2</label>
+                <label class="choice"><input type="checkbox" name="automation-pump" value="3" checked> Pump 3</label>
+                <label class="choice"><input type="checkbox" name="automation-pump" value="4" checked> Pump 1</label>
+              </div>
+            </fieldset>
+
+            <fieldset class="wide">
+              <legend>Days</legend>
+              <div class="choice-row weekdays">
+                <label class="choice"><input type="checkbox" name="weekday" value="0" checked> Mon</label>
+                <label class="choice"><input type="checkbox" name="weekday" value="1" checked> Tue</label>
+                <label class="choice"><input type="checkbox" name="weekday" value="2" checked> Wed</label>
+                <label class="choice"><input type="checkbox" name="weekday" value="3" checked> Thu</label>
+                <label class="choice"><input type="checkbox" name="weekday" value="4" checked> Fri</label>
+                <label class="choice"><input type="checkbox" name="weekday" value="5" checked> Sat</label>
+                <label class="choice"><input type="checkbox" name="weekday" value="6" checked> Sun</label>
+              </div>
+            </fieldset>
+
+            <label>
+              Start time
+              <input id="automation-start" type="time" value="00:00" required>
+            </label>
+            <label>
+              End time
+              <input id="automation-end" type="time" value="18:00" required>
+            </label>
+            <label>
+              ON duration (minutes)
+              <input id="automation-on" type="number" min="0.1" max="1440" step="0.1" value="5" required>
+            </label>
+            <label>
+              Time between injections (minutes)
+              <input id="automation-block" type="number" min="0.1" max="1440" step="0.1" value="25" required>
+            </label>
+            <label class="choice enabled-choice">
+              <input id="automation-enabled" type="checkbox" checked>
+              Enabled immediately
+            </label>
+            <div class="form-actions">
+              <button id="save-automation" type="submit" class="primary">Save automation</button>
+              <button id="cancel-automation" type="button" class="secondary" hidden>Cancel edit</button>
+            </div>
+          </form>
+
+          <div>
+            <div class="saved-heading">
+              <h3>Saved automations</h3>
+              <span id="next-automation">Next —</span>
+            </div>
+            <div id="automation-list" class="automation-list">
+              <p class="empty-state">No saved automations.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="scheduler">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Browser-controlled delivery</p>
+            <h2>One-time sequence</h2>
+          </div>
+          <p>Available while unattended automations are paused.</p>
+        </div>
+        <form id="schedule-form">
+          <label>
+            Pump order
+            <input id="order" value="1,2,3,4" inputmode="numeric" required>
+          </label>
+          <label>
+            Burst duration (seconds)
+            <input id="burst-seconds" type="number" min="0.5" max="3600" step="0.5" value="10" required>
+          </label>
+          <label>
+            Total duration (minutes)
+            <input id="total-minutes" type="number" min="0.01" max="1440" step="0.01" value="10" required>
+          </label>
+          <button id="start-schedule" type="submit" class="primary">Start sequence</button>
+          <button id="stop-schedule" type="button" class="secondary" disabled>Stop sequence</button>
+        </form>
+        <div id="schedule-progress" class="progress-panel" hidden>
+          <div>
+            <span class="label">Active pump</span>
+            <strong id="active-pump">—</strong>
+          </div>
+          <div>
+            <span class="label">Elapsed</span>
+            <strong id="elapsed">0:00</strong>
+          </div>
+          <div>
+            <span class="label">Remaining</span>
+            <strong id="remaining">0:00</strong>
+          </div>
+          <div class="progress-track"><div id="progress-fill"></div></div>
+        </div>
+      </section>
+      </div>
+
+      <section id="visualization-view" class="tab-view visualization-view" hidden>
+        <div class="visualization-header">
+          <div>
+            <p class="eyebrow">Automation timeline</p>
+            <h2>Current pump schedule</h2>
+            <p id="visualization-summary" class="visualization-summary">Loading schedule…</p>
+          </div>
+          <div class="date-navigation">
+            <button id="previous-day" type="button" class="secondary" aria-label="Previous day">←</button>
+            <label>
+              Day
+              <input id="visualization-date" type="date">
+            </label>
+            <button id="today" type="button" class="secondary">Today</button>
+            <button id="next-day" type="button" class="secondary" aria-label="Next day">→</button>
+          </div>
+        </div>
+
+        <div class="visualization-status">
+          <div>
+            <span class="label">Selected day</span>
+            <strong id="selected-day-label">—</strong>
+          </div>
+          <div>
+            <span class="label">Current output</span>
+            <strong id="visualization-current-output">All pumps OFF</strong>
+          </div>
+          <div>
+            <span class="label">Next window</span>
+            <strong id="visualization-next-window">—</strong>
+          </div>
+          <div>
+            <span class="label">Automation state</span>
+            <strong id="visualization-automation-state">—</strong>
+          </div>
+        </div>
+
+        <div class="timeline-card">
+          <div class="timeline-legend" aria-label="Pump colors">
+            <span class="legend-pump pump-color-1">Pump 4</span>
+            <span class="legend-pump pump-color-2">Pump 2</span>
+            <span class="legend-pump pump-color-3">Pump 3</span>
+            <span class="legend-pump pump-color-4">Pump 1</span>
+          </div>
+          <div class="timeline-layout">
+            <div class="timeline-label-spacer"></div>
+            <div id="timeline-hours" class="timeline-hours" aria-hidden="true"></div>
+            <div id="timeline-rows" class="timeline-rows"></div>
+          </div>
+          <div id="visualization-empty" class="empty-state" hidden>No enabled automation windows on this day.</div>
+          <p class="timeline-note">Blocks show scheduled ON windows. The vertical line marks the current local time when viewing today.</p>
+        </div>
+      </section>
+
+      <section id="log-view" class="tab-view log-view" hidden>
+        <div class="visualization-header">
+          <div>
+            <p class="eyebrow">Arduino-confirmed activity</p>
+            <h2>Pump interval log</h2>
+            <p class="visualization-summary">Every row is derived from confirmed firmware state transitions. Times are displayed locally and exported in UTC.</p>
+          </div>
+          <div id="log-health" class="status-pill offline">Checking database…</div>
+        </div>
+
+        <form id="log-filter-form" class="log-filter-form">
+          <label>
+            Pump
+            <select id="log-pump">
+              <option value="">All pumps</option>
+              <option value="1">Pump 4</option>
+              <option value="2">Pump 2</option>
+              <option value="3">Pump 3</option>
+              <option value="4">Pump 1</option>
+            </select>
+          </label>
+          <label>
+            Started after
+            <input id="log-from" type="datetime-local">
+          </label>
+          <label>
+            Started before
+            <input id="log-to" type="datetime-local">
+          </label>
+          <button type="submit" class="primary">Apply filters</button>
+          <button id="clear-log-filters" type="button" class="secondary">Clear</button>
+          <a id="export-log-csv" class="button-link" href="/api/pump-log.csv" download>Export CSV</a>
+        </form>
+
+        <div class="log-summary">
+          <strong id="log-result-count">0 intervals</strong>
+          <span id="log-open-count">0 currently open</span>
+        </div>
+        <div class="log-table-wrap">
+          <table class="log-table">
+            <thead>
+              <tr>
+                <th>Pump</th>
+                <th>Started</th>
+                <th>Ended</th>
+                <th>Duration</th>
+                <th>Control</th>
+                <th>End reason</th>
+              </tr>
+            </thead>
+            <tbody id="log-table-body">
+              <tr><td colspan="6" class="empty-cell">No confirmed pump intervals yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="log-pagination">
+          <button id="log-previous" type="button" class="secondary" disabled>Previous</button>
+          <span id="log-page">Page 1</span>
+          <button id="log-next" type="button" class="secondary" disabled>Next</button>
+        </div>
+      </section>
+
+      <footer>
+        Saved time-based automations continue when this page is closed.
+        Manual controls and one-time sequences require this page to remain open.
+      </footer>
+    </main>
+    <script type="module" src="/public/app.js"></script>
+  </body>
+</html>

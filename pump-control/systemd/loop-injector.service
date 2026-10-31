@@ -1,0 +1,18 @@
+[Unit]
+Description=Loop Injector Pump Automation
+After=graphical-session.target
+Before=startracked-loop-recorder.service
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Sleepy-Stars/pump-control
+ExecStart=/usr/bin/python3 -m loop_injector.service
+Environment=PYTHONUNBUFFERED=1
+Environment=LOOP_INJECTOR_STATE_ROOT=%h/.local/state/loop-injector
+Restart=on-failure
+RestartSec=2s
+TimeoutStopSec=10s
+KillMode=mixed
+
+[Install]
+WantedBy=default.target
